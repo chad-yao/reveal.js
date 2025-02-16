@@ -1,40 +1,78 @@
 <!doctype html>
 <html lang="en">
+
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Evolving Rewards with Graph-of-Thoughts</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="../dist/reveal.css">
+		<link rel="stylesheet" href="../dist/theme/white.css" id="theme">
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+        <link rel="stylesheet" href="../plugin/highlight/monokai.css">
 	</head>
+
 	<body>
+
 		<div class="reveal">
+
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						# Evolving Rewards with Graph-of-Thoughts
+					</script>
+				</section>
+
+				<!-- background -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## background
+						
+						<span style="color:#1BA1E2;">Reward design with LLM for RL</span>
+
+						--
+
+						## example: games
+
+						<iframe width="560" height="315" 
+						src="https://www.youtube.com/embed/pXy0_CWlPHM?mute=1" 
+						title="YouTube video player" 
+						frameborder="0" 
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+						allowfullscreen>
+						</iframe>
+						
+						[Auto MC-Reward: Automated Dense Reward Design with Large Language Models for Minecraft](https://arxiv.org/abs/2312.09238)
+
+						--
+
+						## example: robotics
+
+
+					</script>
+				</section>
+
+            </div>
 		</div>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+		<script src="../dist/reveal.js"></script>
+        <script src="../plugin/markdown/markdown.js"></script>
+        <script src="../plugin/highlight/highlight.js"></script>
+        <script src="../plugin/notes/notes.js"></script>
+        <script src="../plugin/math/math.js"></script>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+		<script>
+
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
 			});
+
 		</script>
+
 	</body>
 </html>

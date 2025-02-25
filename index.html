@@ -28,11 +28,11 @@
 					<script type="text/template">
 						## background
 						
-						<span style="color:#1BA1E2;">Reward design with LLM for RL</span>
+						<span style="color:#1BA1E2;font-style: italic;">Reward design with LLM for RL</span>
 
 						--
 
-						## example: games
+						### example: games
 
 						<iframe width="560" height="315" 
 						src="https://www.youtube.com/embed/pXy0_CWlPHM?mute=1" 
@@ -46,9 +46,120 @@
 
 						--
 
-						## example: robotics
+						### example: robotics
 
+						<video width="640" height="360" controls>
+							<source src="https://robogen-ai.github.io/videos/trailer.mp4" type="video/mp4">
+						</video>
 
+						[RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation](https://robogen-ai.github.io/)
+
+						---
+
+						## background
+
+						<span style="color:#1BA1E2;font-style: italic;">Powerful Reasoning Capbility</span>
+						
+						--
+
+						### Why and How?
+
+						Hallucinations always happen while LLMs are reasoning for complex tasks.
+						
+						- Chain-of-Thoughts (CoT): sequenctial reasoning for step-by-step reasoning. <!-- .element: class="fragment" data-fragment-index="1" -->
+						- Tree-of-Thoughts (ToT): branching explorations of multiple pathways. <!-- .element: class="fragment" data-fragment-index="2" -->
+						- Graph-of-Thoughts (GoT): complex, interconnected reasoning with cross-references loop. <!-- .element: class="fragment" data-fragment-index="3" -->
+
+						--
+
+						![CoT](examples/assets/CoT.png)
+
+						---
+
+						## background
+
+						<span style="color:#1BA1E2;font-style: italic;">General Pipeline</span>
+
+						--
+
+						![pipeline](examples/assets/general_pipeline.png)
+						
+						<span style="font-size: 24px">
+
+						Human feedback: All human parts will be replaced by intelligent agents. <!-- .element: class="fragment" data-fragment-index="4" -->
+
+						Q-A pairs: Rely on Question-Answer only, no reasoning process. <!-- .element: class="fragment" data-fragment-index="5" -->
+
+						Ignore VLM: VLM has powerful vision understanding ability. <!-- .element: class="fragment" data-fragment-index="6" -->
+						</span>
+
+					</script>
+				</section>
+
+				<!-- problem formulation -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## Problem Formulation
+						<span class="r-fit-text">Fomulate RL as a Markov Decision Process (MDP): </span>
+						
+						<span style="font-size: 24px">$$\mathcal{M}:=\left(\mathcal{S},\mathcal{A},\mathcal{R},\mathcal{P},\gamma,\rho\right)$$</span>
+						<span style="font-size: 24px">$$\pi_R=\displaystyle{\arg\max_{\pi}}\ \mathbb{E}_{\pi,\mathcal{M}}\[\sum \gamma^t\mathcal{R}\left(s_t,a_t\right)\]$$</span>
+						<span style="font-size: 24px">$$\xi(\pi_R)=\\{s_0,a_0,...,\\} \sim\rho\(s_0\)\prod\mathcal{P}\(s_\{t+1\}|s_t,a_t\)\pi\(a_t|s_t\)$$</span>
+						<span style="font-size: 24px">$$\displaystyle{\min_R}\ \mathbb{E}_\{\xi(\pi_R)\}\mathcal{L}\[\mathcal{E}(text),\mathcal{E}(\mathcal{D}(\xi(\pi_R)))\]$$</span>
+						<span style="font-size: 24px">$$\nabla_R\mathcal{L}=\frac{\partial\mathcal{L}}{\partial\xi(\pi_R)}\frac{\partial\xi(\pi_R)}{\partial\mathcal{R}}$$</span>
+					</script>
+				</section>
+
+				<!-- Piplelin -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## Pipeline (Untrainable)
+						
+						![pipeline](examples/assets/pipeline.png)
+
+						--
+
+						## Pipeline (Trainable)
+
+						![pipeline](examples/assets/trainable_pipeline.png)
+
+					</script>
+				</section>
+
+				<!-- Result -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## result
+						```python [11-17|19-23]
+						def _compute_reward(self):
+							toy_pos = get_position(self, "Toy")
+							storage_bbox_low, storage_bbox_high = get_bounding_box_link(self, "StorageFurniture", "link_2")
+							
+							# Reward for moving the toy closer to the storage furniture
+							reward_approach = -np.linalg.norm(toy_pos - (storage_bbox_low + storage_bbox_high) / 2)
+						
+							# Main success condition: Toy is inside the storage
+							reward_in = int(in_bbox(self, toy_pos, storage_bbox_low, storage_bbox_high))
+						
+							# Additional failure cases:
+							# - Robot drops the toy before reaching the storage
+							# - Toy falls outside the storage due to incorrect placement
+							if not check_grasped(self, "Toy") and not reward_in:
+								reward_fail = -5  # High penalty for dropping before completion
+							else:
+								reward_fail = 0
+						
+							# If the toy is inside but not released, give a small penalty
+							if reward_in and check_grasped(self, "Toy"):
+								reward_holding = -1
+							else:
+								reward_holding = 0
+						
+							reward = 5 * reward_in + reward_approach + reward_fail + reward_holding
+							success = reward_in and not check_grasped(self, "Toy")
+						
+							return reward, success
+						```
 					</script>
 				</section>
 

@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Evolving Rewards with Graph-of-Thoughts</title>
+		<title>Evolving Rewards Using Language Model via Graph-of-Thoughts</title>
 
 		<link rel="stylesheet" href="../dist/reveal.css">
 		<link rel="stylesheet" href="../dist/theme/white.css" id="theme">
@@ -160,6 +160,33 @@
 						
 							return reward, success
 						```
+					</script>
+				</section>
+
+				<!-- Experiments -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## Experiments Design
+						
+						**Goal:** Demonstrate our idea works for general manipulation tasks acroos different environments.
+
+						--
+
+						**Baseline:** RoboGen, Text2Reward, Self-Align Reward Learning
+
+						**Ablation Study:** Few-shot vs Zero-shot, Refine once vs Refine multiple times
+					</script>
+				</section>
+
+				<!-- Contribution -->
+				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+					<script type="text/template">
+						## Contribution
+						
+						- First time to use GoT for reward design in manipulation tasks.
+						- A general pipeline for reward design with GoT, which can be used in different environments.
+						- VLM feedback for rollouts.
+
 					</script>
 				</section>
 

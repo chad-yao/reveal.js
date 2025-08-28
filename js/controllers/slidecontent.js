@@ -14,6 +14,7 @@ export default class SlideContent {
 		this.Reveal = Reveal;
 
 		this.startEmbeddedIframe = this.startEmbeddedIframe.bind( this );
+		this.ensureMobileMediaPlaying = this.ensureMobileMediaPlaying.bind( this );
 
 	}
 
@@ -51,7 +52,13 @@ export default class SlideContent {
 	load( slide, options = {} ) {
 
 		// Show the slide element
-		slide.style.display = this.Reveal.getConfig().display;
+		const displayValue = this.Reveal.getConfig().display;
+		if( displayValue.includes('!important') ) {
+			const value = displayValue.replace(/\s*!important\s*$/, '').trim();
+			slide.style.setProperty('display', value, 'important');
+		} else {
+			slide.style.display = displayValue;
+		}
 
 		// Media elements with data-src attributes
 		queryAll( slide, 'img[data-src], video[data-src], audio[data-src], iframe[data-src]' ).forEach( element => {
@@ -308,7 +315,7 @@ export default class SlideContent {
 
 				if( autoplay && typeof el.play === 'function' ) {
 
-					// In teh speaker view we only auto-play muted media
+					// In the speaker view we only auto-play muted media
 					if( isSpeakerNotesWindow && !el.muted ) return;
 
 					// If the media is ready, start playback
@@ -319,6 +326,8 @@ export default class SlideContent {
 					// of waiting, we initiate playback
 					else if( isMobile ) {
 						let promise = el.play();
+
+						el.addEventListener( 'canplay', this.ensureMobileMediaPlaying );
 
 						// If autoplay does not work, ensure that the controls are visible so
 						// that the viewer can start the media on their own
@@ -371,6 +380,40 @@ export default class SlideContent {
 			}
 
 		}
+
+	}
+
+	/**
+	 * Ensure that an HTMLMediaElement is playing on mobile devices.
+	 *
+	 * This is a workaround for a bug in mobile Safari where
+	 * the media fails to display if many videos are started
+	 * at the same moment. When this happens, Mobile Safari
+	 * reports the video is playing, and the current time
+	 * advances, but nothing is visible.
+	 *
+	 * @param {Event} event
+	 */
+	ensureMobileMediaPlaying( event ) {
+
+		const el = event.target;
+
+		// Ignore this check incompatible browsers
+		if( typeof el.getVideoPlaybackQuality !== 'function' ) {
+			return;
+		}
+
+		setTimeout( () => {
+
+			const playing = el.paused === false;
+			const totalFrames = el.getVideoPlaybackQuality().totalVideoFrames;
+
+			if( playing && totalFrames === 0 ) {
+				el.load();
+				el.play();
+			}
+
+		}, 1000 );
 
 	}
 
@@ -461,6 +504,10 @@ export default class SlideContent {
 				if( !el.hasAttribute( 'data-ignore' ) && typeof el.pause === 'function' ) {
 					el.setAttribute('data-paused-by-reveal', '');
 					el.pause();
+
+					if( isMobile ) {
+						el.removeEventListener( 'canplay', this.ensureMobileMediaPlaying );
+					}
 				}
 			} );
 
